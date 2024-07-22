@@ -312,6 +312,11 @@ defmodule Mox.Server do
         {pid, {fun, deps}}
       end)
 
-    %{state | deps: deps, allowances: Map.new(allowances), lazy_calls: lazy_calls}
+    allowances =
+      Enum.reduce(allowances, %{}, fn {k, v}, acc ->
+        Map.update(acc, k, v, &Map.merge(&1, v))
+      end)
+
+    %{state | deps: deps, allowances: allowances, lazy_calls: lazy_calls}
   end
 end
